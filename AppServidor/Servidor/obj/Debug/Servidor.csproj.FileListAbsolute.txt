@@ -1,0 +1,7 @@
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.exe.config
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.exe
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.pdb
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.AssemblyReference.cache
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.CoreCompileInputs.cache
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.exe
+C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.pdb

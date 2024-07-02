@@ -1,0 +1,88 @@
+isplay: flex;
+                flex-wrap: wrap;
+            }
+            .header, .cell {
+                flex: 1 1 100%;
+                box-sizing: border-box;
+            }
+            .cell {
+                display: flex;
+                justify-content: space-between;
+            }
+            .label {
+                font-weight: bold;
+                margin-right: 10px;
+            }
+            .value {
+                text-align: right;
+            }
+        }
+        @media (min-width: 769px) {
+            .table > .row {
+                display: contents;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="table">
+        <div class="header">Critério</div>
+        <div class="header">Requisito VPS</div>
+        <div class="header red center">0 - Inexistência<br>Prática não implementada</div>
+        <div class="header orange center">1 - Fraco<br>Em início de implantação, poucos exemplos</div>
+        <div class="header yellow center">2 - Em implantação<br>Em implantação, ainda não abrangente</div>
+        <div class="header green center">3 - Implantado<br>Implantado e atingindo os resultados esperados</div>
+        <div class="header blue center">4 - Excelência<br>Internalizado e melhorado continuamente</div>
+
+        <div class="row">
+            <div class="cell"><span class="label">Definição de Indicadores</span></div>
+            <div class="cell"><span class="label">14.1 Indicadores de resultados e de processos são estabelecidos de acordo com as necessidades do cliente e do negócio, orientando a tomada de decisão no dia-a-dia.</span></div>
+            <div class="cell center">0</div>
+            <div class="cell center">1</div>
+            <div class="cell center">2</div>
+            <div class="cell center">3</div>
+            <div class="cell center">4</div>
+        </div>
+
+        <div class="row">
+            <div class="cell"><span class="label">Padronização de Indicadores</span></div>
+            <div class="cell"><span class="label">14.2 Os indicadores possuem forma de medição padronizada e responsável único definido, de acordo com as responsabilidades dos processos.</span></div>
+            <div class="cell center">0</div>
+            <div class="cell center">1</div>
+            <div class="cell center">2</div>
+            <div class="cell center">3</div>
+            <div class="cell center">4</div>
+        </div>
+
+        <div class="row">
+            <div class="cell"><span class="label">Rotina de Desempenho</span></div>
+            <div class="cell"><span class="label">14.3 Existe rotina sistematizada para medir o desempenho dos processos, que promove um ambiente de exposição de problemas e um fluxo de informações entre os diferentes níveis.</span></div>
+            <div class="cell center">0</div>
+            <div class="cell center">1</div>
+            <div class="cell center">2</div>
+            <div class="cell center">3</div>
+            <div class="cell center">4</div>
+        </div>
+
+        <div class="row">
+            <div class="cell"><span class="label">Gestão Visual</span></div>
+            <div class="cell"><span class="label">14.4 As informações são disponíveis de forma visual e existem referências que possibilitam o acompanhamento dos resultados e a rápida identificação de problemas.</span></div>
+            <div class="cell center">0</div>
+            <div class="cell center">1</div>
+            <div class="cell center">2</div>
+            <div class="cell center">3</div>
+            <div class="cell center">4</div>
+        </div>
+
+        <div class="row">
+            <div class="cell"><span class="label">Rotinas Prioritárias – Diário de Bordo</span></div>
+            <div class="cell"><span class="label">14.5 O diário de bordo contempla as rotinas mínimas necessárias para o exercício das funções e é cumprido com disciplina.</span></div>
+            <div class="cell center">0</div>
+            <div class="cell center">1</div>
+            <div class="cell center">2</div>
+            <div class="cell center">3</div>
+            <div class="cell center">4</div>
+        </div>
+    </div>
+</body>
+</html>
