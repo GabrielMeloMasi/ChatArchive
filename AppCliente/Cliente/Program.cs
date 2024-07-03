@@ -1,151 +1,116 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-public class FileClient
+class UDPClient
 {
-    private const string serverAddress = "10.199.65.65";
-    private const int port = 12345;
-    private const string clientFilesDirectory = @"C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\FileClient";
+    private const int ServerPort = 12345; // Porta do servidor
+    private const string ServerAddress = "127.0.0.1"; // Endereço IP do servidor
+    private const int PacketSize = 1024; // Tamanho do pacote em bytes
 
     public static void Main()
     {
-        // Verifica se o diretório do cliente existe; se não, cria.
-        if (!Directory.Exists(clientFilesDirectory))
-        {
-            Directory.CreateDirectory(clientFilesDirectory);
-        }
+        UdpClient udpClient = new UdpClient(); // Cria um cliente UDP
+        IPEndPoint serverEP = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort); // Define o endereço do servidor
+
+        Console.WriteLine("Cliente UDP iniciado.");
 
         while (true)
         {
-            // Menu de opções para o cliente.
-            Console.WriteLine("1. Upload de arquivo");
-            Console.WriteLine("2. Listas de arquivos do Servirdor");
-            Console.WriteLine("3. Download de arquivo");
-            Console.WriteLine("4. Sair");
-            Console.Write("Selecione: ");
-            string option = Console.ReadLine();
+            Console.WriteLine("Digite um comando (UPLOAD, LIST, DOWNLOAD, EXIT):"); // Solicita o comando ao usuário
+            string command = Console.ReadLine(); // Lê o comando do usuário
+            string[] commandParts = command.Split(' '); // Divide o comando em partes
 
-            switch (option)
+            switch (commandParts[0])
             {
-                case "1":
-                    Console.Write("Envie o caminho completo do arquivo: ");
-                    string filePath = Console.ReadLine();
-                    UploadFile(filePath);
+                case "UPLOAD":
+                    UploadFile(udpClient, serverEP, commandParts[1]); // Chama o método para enviar um arquivo
                     break;
-                case "2":
-                    ListFiles();
+                case "LIST":
+                    RequestFileList(udpClient, serverEP); // Chama o método para solicitar a lista de arquivos
                     break;
-                case "3":
-                    Console.Write("Envie o nome do arquivo para Download: ");
-                    string fileName = Console.ReadLine();
-                    DownloadFile(fileName);
+                case "DOWNLOAD":
+                    DownloadFile(udpClient, serverEP, commandParts[1]); // Chama o método para baixar um arquivo
                     break;
-                case "4":
-                    Console.WriteLine("Saindo...");
-                    return;
+                case "EXIT":
+                    return; // Sai do loop e encerra o cliente
                 default:
-                    Console.WriteLine("Opção Inválida.");
+                    Console.WriteLine("Comando desconhecido."); // Comando inválido
                     break;
             }
         }
     }
 
-    private static void UploadFile(string filePath)
+    private static void UploadFile(UdpClient udpClient, IPEndPoint serverEP, string filePath)
     {
-        try
+        if (File.Exists(filePath))
         {
-            // Obtém o nome do arquivo a partir do caminho completo.
-            string fileName = Path.GetFileName(filePath);
-            // Cria um cliente TCP conectando ao servidor na porta especificada.
-            TcpClient client = new TcpClient(serverAddress, port);
-            NetworkStream stream = client.GetStream();
+            byte[] fileData = File.ReadAllBytes(filePath); // Lê os dados do arquivo local
+            string fileName = Path.GetFileName(filePath); // Obtém o nome do arquivo
 
-            // Envia a requisição UPLOAD seguida do nome do arquivo.
-            StreamWriter writer = new StreamWriter(stream);
-            writer.WriteLine("UPLOAD " + fileName);
-            writer.Flush();
-
-            // Lê os bytes do arquivo e os envia para o servidor.
-            byte[] fileBytes = File.ReadAllBytes(filePath);
-            stream.Write(fileBytes, 0, fileBytes.Length);
-
-            Console.WriteLine($"Arquivo '{fileName}' enviado com sucesso.");
-
-            // Fecha a conexão com o servidor.
-            client.Close();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Erro para upload de arquivo: " + ex.Message);
-        }
-    }
-
-    private static void ListFiles()
-    {
-        try
-        {
-            // Cria um cliente TCP conectando ao servidor na porta especificada.
-            TcpClient client = new TcpClient(serverAddress, port);
-            NetworkStream stream = client.GetStream();
-
-            // Envia a requisição LIST para obter a lista de arquivos no servidor.
-            StreamWriter writer = new StreamWriter(stream);
-            writer.WriteLine("LIST");
-            writer.Flush();
-
-            // Lê a resposta do servidor que contém a lista de arquivos.
-            StreamReader reader = new StreamReader(stream);
-            string fileList = reader.ReadToEnd();
-
-            Console.WriteLine("Arquivos do servidor:");
-            Console.WriteLine(fileList);
-
-            // Fecha a conexão com o servidor.
-            client.Close();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Erro para listar arquivos: " + ex.Message);
-        }
-    }
-
-    private static void DownloadFile(string fileName)
-    {
-        try
-        {
-            // Cria um cliente TCP conectando ao servidor na porta especificada.
-            TcpClient client = new TcpClient(serverAddress, port);
-            NetworkStream stream = client.GetStream();
-
-            // Envia a requisição DOWNLOAD seguida do nome do arquivo desejado.
-            StreamWriter writer = new StreamWriter(stream);
-            writer.WriteLine("DOWNLOAD " + fileName);
-            writer.Flush();
-
-            // Caminho onde o arquivo será salvo localmente.
-            string filePath = Path.Combine(clientFilesDirectory, fileName);
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            // Cria um novo arquivo e escreve os dados recebidos do servidor.
-            using (FileStream fileStream = File.Create(filePath))
+            // Envia os dados em pacotes
+            int packetNumber = 0;
+            for (int i = 0; i < fileData.Length; i += PacketSize)
             {
-                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                int size = Math.Min(PacketSize, fileData.Length - i);
+                byte[] packetData = new byte[size];
+                Array.Copy(fileData, i, packetData, 0, size);
+
+                byte[] commandData = Encoding.UTF8.GetBytes($"UPLOAD {fileName} {packetNumber}");
+                udpClient.Send(commandData, commandData.Length, serverEP); // Envia o comando para o servidor
+                udpClient.Send(packetData, packetData.Length, serverEP); // Envia os dados do pacote para o servidor
+
+                // Aguarda ACK do servidor
+                byte[] ackData = udpClient.Receive(ref serverEP);
+                string ack = Encoding.UTF8.GetString(ackData);
+                if (ack == $"ACK {packetNumber}")
                 {
-                    fileStream.Write(buffer, 0, bytesRead);
+                    Console.WriteLine($"Pacote {packetNumber} enviado e confirmado.");
                 }
+                else
+                {
+                    Console.WriteLine($"Falha ao enviar o pacote {packetNumber}. Retentando...");
+                    i -= PacketSize; // Retorna para retransmitir o pacote
+                }
+
+                packetNumber++;
             }
 
-            Console.WriteLine($"Arquivo '{fileName}' baixado com sucesso de '{clientFilesDirectory}'.");
-
-            // Fecha a conexão com o servidor.
-            client.Close();
+            Console.WriteLine($"Arquivo {fileName} enviado.");
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine("Erro para baixar arquivo: " + ex.Message);
+            Console.WriteLine("Arquivo não encontrado."); // Mensagem de erro se o arquivo não for encontrado
+        }
+    }
+
+    private static void RequestFileList(UdpClient udpClient, IPEndPoint serverEP)
+    {
+        byte[] commandData = Encoding.UTF8.GetBytes("LIST"); // Prepara o comando para solicitar a lista de arquivos
+        udpClient.Send(commandData, commandData.Length, serverEP); // Envia o comando para o servidor
+
+        byte[] buffer = udpClient.Receive(ref serverEP); // Recebe a lista de arquivos do servidor
+        string fileList = Encoding.UTF8.GetString(buffer); // Converte os dados recebidos em string
+        Console.WriteLine($"Arquivos no servidor: {fileList}"); // Exibe a lista de arquivos
+    }
+
+    private static void DownloadFile(UdpClient udpClient, IPEndPoint serverEP, string fileName)
+    {
+        byte[] commandData = Encoding.UTF8.GetBytes($"DOWNLOAD {fileName}"); // Prepara o comando de download
+        udpClient.Send(commandData, commandData.Length, serverEP); // Envia o comando para o servidor
+
+        byte[] fileData = udpClient.Receive(ref serverEP); // Recebe os dados do arquivo do servidor
+
+        if (Encoding.UTF8.GetString(fileData) == "Arquivo não encontrado.")
+        {
+            Console.WriteLine("Arquivo não encontrado no servidor."); // Mensagem de erro se o arquivo não for encontrado no servidor
+        }
+        else
+        {
+            File.WriteAllBytes(fileName, fileData); // Salva os dados do arquivo localmente
+            Console.WriteLine($"Arquivo {fileName} baixado.");
         }
     }
 }

@@ -1,159 +1,118 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
-public class FileServer
+class UDPServer
 {
-    private const int port = 12345;
-    private const string filesDirectory = @"C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\FileServer";
+    private const int Port = 12345; // Porta usada pelo servidor
+    private const string StorageFolder = "ServerFiles"; // Pasta para armazenar arquivos recebidos
+    private const int PacketSize = 1024; // Tamanho do pacote em bytes
+    private static Dictionary<int, byte[]> receivedPackets = new Dictionary<int, byte[]>(); // Buffer de pacotes recebidos
 
     public static void Main()
     {
-        // Verifica se o diretório de arquivos existe; se não, cria.
-        if (!Directory.Exists(filesDirectory))
+        if (!Directory.Exists(StorageFolder))
         {
-            Directory.CreateDirectory(filesDirectory);
+            Directory.CreateDirectory(StorageFolder); // Cria a pasta de armazenamento se não existir
         }
 
-        Console.WriteLine("Servidor está rodando...");
-        Console.WriteLine($"Listado na porta {port}");
+        UdpClient udpServer = new UdpClient(Port); // Cria um servidor UDP na porta especificada
+        Console.WriteLine($"Servidor UDP iniciado na porta {Port}");
 
-        // Cria um listener TCP na porta especificada.
-        TcpListener listener = new TcpListener(IPAddress.Any, port);
-        listener.Start();
-
-        try
+        while (true)
         {
-            while (true)
+            IPEndPoint remoteEP = null;
+            byte[] data = udpServer.Receive(ref remoteEP); // Recebe dados do cliente
+            string receivedData = Encoding.UTF8.GetString(data); // Converte os dados recebidos em string
+            Console.WriteLine($"Dados recebidos de {remoteEP}: {receivedData}");
+
+            string[] commandParts = receivedData.Split(' '); // Divide a string em partes usando espaço como delimitador
+            string command = commandParts[0]; // Obtém o comando da string
+
+            switch (command)
             {
-                // Aceita conexões dos clientes.
-                TcpClient client = listener.AcceptTcpClient();
-                Console.WriteLine("Cliente conectado");
-
-                // Cria uma tarefa para manipular o cliente em paralelo.
-                Task.Run(() => HandleClient(client));
+                case "UPLOAD":
+                    int packetNumber = int.Parse(commandParts[2]); // Número do pacote
+                    ReceiveFile(udpServer, remoteEP, commandParts[1], packetNumber); // Chama o método para receber o arquivo
+                    break;
+                case "LIST":
+                    SendFileList(udpServer, remoteEP); // Chama o método para enviar a lista de arquivos
+                    break;
+                case "DOWNLOAD":
+                    SendFile(udpServer, remoteEP, commandParts[1]); // Chama o método para enviar o arquivo solicitado
+                    break;
+                default:
+                    Console.WriteLine("Comando desconhecido."); // Comando inválido
+                    break;
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error: " + ex.Message);
         }
     }
 
-    private static void HandleClient(TcpClient client)
+    private static void ReceiveFile(UdpClient udpServer, IPEndPoint remoteEP, string fileName, int packetNumber)
     {
-        try
+        byte[] fileData = udpServer.Receive(ref remoteEP); // Recebe os dados do arquivo do cliente
+        receivedPackets[packetNumber] = fileData; // Armazena o pacote recebido no buffer
+
+        // Envia ACK de confirmação de recebimento
+        byte[] ack = Encoding.UTF8.GetBytes($"ACK {packetNumber}");
+        udpServer.Send(ack, ack.Length, remoteEP);
+
+        // Se todos os pacotes forem recebidos, monta o arquivo
+        if (AllPacketsReceived())
         {
-            // Obtém o stream de rede para comunicação com o cliente.
-            NetworkStream stream = client.GetStream();
-            StreamReader reader = new StreamReader(stream);
-            StreamWriter writer = new StreamWriter(stream);
-
-            // Lê a requisição do cliente.
-            string request = reader.ReadLine();
-            Console.WriteLine("Request received: " + request);
-
-            if (request.StartsWith("UPLOAD"))
+            using (var fileStream = new FileStream(Path.Combine(StorageFolder, fileName), FileMode.Create, FileAccess.Write))
             {
-                // Extrai o nome do arquivo da requisição.
-                string fileName = request.Substring(7); // Remove "UPLOAD "
-                // Recebe o arquivo enviado pelo cliente.
-                ReceiveFile(fileName, stream);
-            }
-            else if (request == "LIST")
-            {
-                // Envia a lista de arquivos disponíveis para o cliente.
-                SendFileList(writer);
-            }
-            else if (request.StartsWith("DOWNLOAD"))
-            {
-                // Extrai o nome do arquivo da requisição.
-                string fileName = request.Substring(9); // Remove "DOWNLOAD "
-                // Envia o arquivo solicitado para o cliente.
-                SendFile(fileName, stream);
-            }
-
-            // Fecha a conexão com o cliente.
-            client.Close();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error handling client: " + ex.Message);
-        }
-    }
-
-    private static void ReceiveFile(string fileName, NetworkStream stream)
-    {
-        try
-        {
-            // Caminho completo do arquivo no diretório de arquivos.
-            string filePath = Path.Combine(filesDirectory, fileName);
-
-            // Cria um novo arquivo e recebe os dados do cliente.
-            using (FileStream fileStream = File.Create(filePath))
-            {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-
-                // Lê os dados do cliente e escreve no arquivo.
-                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                foreach (var packet in receivedPackets)
                 {
-                    fileStream.Write(buffer, 0, bytesRead);
+                    fileStream.Write(packet.Value, 0, packet.Value.Length); // Escreve os dados do arquivo na pasta de armazenamento
                 }
             }
-
-            Console.WriteLine($"Arquivo '{fileName}' recebido e salvo.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Erro para receber arquivo: " + ex.Message);
+            receivedPackets.Clear(); // Limpa o buffer
+            Console.WriteLine($"Arquivo {fileName} recebido e armazenado.");
         }
     }
 
-    private static void SendFileList(StreamWriter writer)
+    private static bool AllPacketsReceived()
     {
-        try
+        // Verifica se todos os pacotes foram recebidos (simplesmente verifica se não há buracos na sequência)
+        // Para simplificação, assumimos que os pacotes começam em 0 e são consecutivos.
+        int expectedPacketCount = receivedPackets.Keys.Count;
+        for (int i = 0; i < expectedPacketCount; i++)
         {
-            // Obtém a lista de arquivos no diretório de arquivos.
-            string[] files = Directory.GetFiles(filesDirectory);
-            foreach (string file in files)
+            if (!receivedPackets.ContainsKey(i))
             {
-                // Escreve o nome de cada arquivo na stream para o cliente.
-                writer.WriteLine(Path.GetFileName(file));
+                return false;
             }
-            writer.Flush(); // Garante que todos os dados sejam enviados.
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Erro para enviar lista de arquivos: " + ex.Message);
-        }
+        return true;
     }
 
-    private static void SendFile(string fileName, NetworkStream stream)
+    private static void SendFileList(UdpClient udpServer, IPEndPoint remoteEP)
     {
-        try
-        {
-            // Caminho completo do arquivo no diretório de arquivos.
-            string filePath = Path.Combine(filesDirectory, fileName);
+        string[] files = Directory.GetFiles(StorageFolder); // Obtém a lista de arquivos na pasta de armazenamento
+        string fileList = string.Join(",", files); // Concatena os nomes dos arquivos em uma única string
+        byte[] data = Encoding.UTF8.GetBytes(fileList); // Converte a lista de arquivos para bytes
+        udpServer.Send(data, data.Length, remoteEP); // Envia a lista de arquivos para o cliente
+        Console.WriteLine("Lista de arquivos enviada.");
+    }
 
-            if (File.Exists(filePath))
-            {
-                // Lê os bytes do arquivo e os envia para o cliente.
-                byte[] fileBytes = File.ReadAllBytes(filePath);
-                stream.Write(fileBytes, 0, fileBytes.Length);
-                Console.WriteLine($"Arquivo '{fileName}' enviado para o cliente.");
-            }
-            else
-            {
-                Console.WriteLine($"Arquivo '{fileName}' não encontrado.");
-            }
-        }
-        catch (Exception ex)
+    private static void SendFile(UdpClient udpServer, IPEndPoint remoteEP, string fileName)
+    {
+        string filePath = Path.Combine(StorageFolder, fileName); // Obtém o caminho completo do arquivo
+        if (File.Exists(filePath))
         {
-            Console.WriteLine("Erro para enviar arquivo: " + ex.Message);
+            byte[] fileData = File.ReadAllBytes(filePath); // Lê os dados do arquivo
+            udpServer.Send(fileData, fileData.Length, remoteEP); // Envia os dados do arquivo para o cliente
+            Console.WriteLine($"Arquivo {fileName} enviado.");
+        }
+        else
+        {
+            byte[] data = Encoding.UTF8.GetBytes("Arquivo não encontrado."); // Mensagem de erro se o arquivo não for encontrado
+            udpServer.Send(data, data.Length, remoteEP); // Envia a mensagem de erro para o cliente
+            Console.WriteLine("Arquivo não encontrado.");
         }
     }
 }

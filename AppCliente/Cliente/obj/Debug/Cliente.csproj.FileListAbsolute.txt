@@ -5,3 +5,11 @@ C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\App
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.csproj.CoreCompileInputs.cache
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.exe
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.pdb
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\bin\Debug\Cliente.exe.config
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\bin\Debug\Cliente.exe
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\bin\Debug\Cliente.pdb
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.csproj.AssemblyReference.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.csproj.SuggestedBindingRedirects.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.csproj.CoreCompileInputs.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.exe
+C:\Users\masig\Desktop\Projects\ChatArchive\AppCliente\Cliente\obj\Debug\Cliente.pdb
