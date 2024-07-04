@@ -5,9 +5,9 @@ using System.Text;
 
 public class FileClient
 {
-    private const string serverAddress = "10.199.65.65";
+    private const string serverAddress = "192.168.0.117";
     private const int port = 12345;
-    private const string clientFilesDirectory = @"C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\FileClient";
+    private const string clientFilesDirectory = @"C:\Users\masig\Desktop\Projects\ChatArchive\FileClient";
 
     public static void Main()
     {

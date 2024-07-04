@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 public class FileServer
 {
     private const int port = 12345;
-    private const string filesDirectory = @"C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\FileServer";
+    private const string filesDirectory = @"C:\Users\masig\Desktop\Projects\ChatArchive\FileServer";
 
     public static void Main()
     {

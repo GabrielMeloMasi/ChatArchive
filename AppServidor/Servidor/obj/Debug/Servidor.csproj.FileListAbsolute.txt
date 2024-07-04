@@ -5,3 +5,11 @@ C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\App
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.CoreCompileInputs.cache
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.exe
 C:\Users\2568455\Desktop\Projeto Vale\projects\projetos-pessoais\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.pdb
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.exe.config
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.exe
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\bin\Debug\Servidor.pdb
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.AssemblyReference.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.SuggestedBindingRedirects.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.csproj.CoreCompileInputs.cache
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.exe
+C:\Users\masig\Desktop\Projects\ChatArchive\AppServidor\Servidor\obj\Debug\Servidor.pdb

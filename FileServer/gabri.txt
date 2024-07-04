@@ -1,0 +1,74 @@
+desenvolver uma aplicação, onde boa
+parte das aplicações armazena os dados dos dois primeiros elementos, que são o
+frontend e backend em repositórios de código, e deixam o terceiro elemento, que é o
+banco de dados, separado dos dois primeiros. Há aplicações também que separam
+em repositórios distintos os códigos responsáveis por sustentar o frontend e backend
+da aplicação, mantendo ainda o elemento banco de dados separado. As aplicações
+de empresas que estão iniciando no mercado são pequenas e de baixa
+complexidade, e, são sustentadas por uma equipe pequena de desenvolvedores.
+Entretanto, conforme a empresa cresce, a aplicação precisará acompanhar o ritmo
+da empresa, o que denota a necessidade de mais programadores para sustentar a
+aplicação. Novos recursos sempre serão adicionados na aplicação, e com isso, três
+consequências acompanham o crescimento.
+Ainda em Fowler (2017), a primeira consequência é o aumento significativo da
+carga de trabalho, que seria todo o trabalho operacional realizado sobre uma
+determinada aplicação. A segunda consequência é causada em virtude da adição de
+novos recursos na aplicação, tornando-a mais complexa, e por fim, a terceira
+consequência é o necessário dimensionamento horizontal ou vertical da aplicação.
+Entende-se como dimensionamento horizontal a adição de novos servidores ou
+instâncias com uma cópia da aplicação sejam adicionados, e após isso, o tráfego
+desta aplicação será distribuído de forma inteligente com balanceadores de carga ou
+load balancers. Já o dimensionamento vertical é o aumento de recursos de um
+determinado servidor conforme a necessidade da aplicação, seja o número de
+processadores disponíveis para uso, quantidade de memória ou armazenamento de
+disco. Acompanhando esse crescimento da aplicação e de pessoas responsáveis
+por ela, a complexidade aumentará também, e com isso, inúmeros testes da
+aplicação deverão ser escritos e executados para garantir que qualquer alteração
+realizada no código não comprometa as milhares de linhas de código da aplicação.
+Manutenções e alterações nesses tipos de aplicações acabam se tornando
+praticamente inviáveis, causando problemas e defasagem técnica da aplicação, que
+por conta disso e de seu ciclo de vida, são conhecidas como monólitos. 
+   Conforme Fowler (2017), comparando com o modelo de arquitetura
+monolítica, a abordagem da arquitetura de microsserviços não são muito diferentes
+entre si. Um microsserviço, assim como um serviço baseado na abordagem
+monolítica, também será divido em três componentes, sendo eles o frontend,
+backend e um sistema de armazenamento dos dados.
+ Segundo Fowler (2017), diferentemente, na arquitetura de microsserviços, o
+frontend do sistema será sustentado por uma API (Application Programming
+Interface, ou interface de programação de aplicação), que nada mais são que pontos
+de acesso estáticos dentro de um sistema, onde cada ponto é responsável por
+realizar uma tarefa do sistema, seja ela incluir um novo registro no banco de dados,
+realizar a alteração de um cadastro ou exclusão de algum dado específico. Por
+exemplo, é possível definir um endpoint ou ponto de acesso da API denominado
+criar_usuário, onde esse microsserviço será responsável por criar usuários para o
+acesso de algum determinado sistema
+	De acordo com Fowler (2017), os endpoints são apenas separados na
+arquitetura e na teoria, a fim de dar uma maior clareza da estrutura como um todo,
+mas na prática, todos esses endpoints estão alocados um ao lado do outro, trabalho
+em conjunto como uma estrutura de backend. A ideia neste caso é extrair cada
+função de um sistema centralizado ou monolítico e segregá-los em pequenas
+funções, ou seja, os microsserviços.
+ Em conformidade com Fowler (2017), essa arquitetura e abordagem são
+estritamente necessárias para que os microsserviços funcionem e bem e se
+comuniquem com clareza, fazendo com que, em conjunto, esses microsserviços
+consigam executar ações que antes eram somente executadas por sistemas
+centralizados. 
+
+
+
+O texto aborda a transição de uma arquitetura monolítica para uma arquitetura de microsserviços, destacando a necessidade desse movimento para garantir a escalabilidade, disponibilidade e eficiência das aplicações.
+
+Na abordagem monolítica, uma aplicação é construída como uma entidade única, onde todas as funcionalidades (frontend, backend e armazenamento de dados) estão integradas. À medida que a aplicação cresce, torna-se difícil de manter e escalar, resultando em problemas de complexidade e desempenho.
+
+Ao adotar a arquitetura de microsserviços, a aplicação é decomposta em pequenos serviços independentes, cada um responsável por uma função específica. Esses serviços são divididos em três componentes principais: frontend, backend e sistema de armazenamento de dados.
+
+Frontend: Na arquitetura de microsserviços, o frontend é sustentado por uma API. Cada microsserviço oferece pontos de acesso (endpoints) para realizar diferentes operações, como criar, ler, atualizar ou excluir dados. Por exemplo, um endpoint chamado "criar_usuário" pode ser responsável por criar novos usuários no sistema.
+Backend: Os microsserviços representam o backend da aplicação. Cada microsserviço executa uma função específica e se comunica com outros microsserviços por meio de APIs. Essa abordagem permite a distribuição e escalabilidade dos serviços de forma mais eficiente.
+Sistema de Armazenamento de Dados: Assim como na arquitetura monolítica, os dados são armazenados em um sistema de banco de dados. No entanto, os microsserviços podem ter seu próprio banco de dados ou compartilhar um banco de dados com outros serviços, dependendo dos requisitos do negócio.
+A chave da arquitetura de microsserviços está na modularização e na comunicação clara entre os serviços. Cada microsserviço é desenvolvido, implantado e escalado de forma independente, o que facilita a manutenção e o desenvolvimento contínuo da aplicação.
+
+Além disso, a arquitetura de microsserviços permite escalabilidade tanto horizontal quanto vertical:
+
+Escalabilidade Horizontal: Adicionando novas instâncias dos microsserviços conforme necessário, distribuindo o tráfego entre elas com balanceadores de carga.
+Escalabilidade Vertical: Aumentando os recursos (como processadores, memória, etc.) dos servidores que executam os microsserviços.
+Por fim, a transição para uma arquitetura de microsserviços não apenas facilita o gerenciamento e a escalabilidade da aplicação, mas também permite uma melhor adaptação às necessidades em constante evolução do negócio. No entanto, é importante considerar que essa transição envolve desafios, como garantir a comunicação eficaz entre os serviços e a manutenção da consistência dos dados.
